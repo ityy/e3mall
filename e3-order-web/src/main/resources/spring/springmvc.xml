@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+
+    <!--加载配置文件-->
+    <context:property-placeholder location="classpath:resource.properties"/>
+
+
+    <context:component-scan base-package="cn.yang.e3mall.order.controller"/>
+
+
+    <!--配置三大件 处理器映射器 处理器适配器 视图解释器-->
+    <!-- 处理器映射器 -->
+    <!--         <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/> -->
+    <!-- 处理器适配器 -->
+    <!--         <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/> -->
+    <!-- 注解驱动 相当于上边两项的配置-->
+    <mvc:annotation-driven/>
+    <!-- 视图解释器 指定路径和扩展名 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--配置拦截器-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <!--拦截所有-->
+            <mvc:mapping path="/**"/>
+            <bean class="cn.yang.e3mall.order.interceptor.LoginInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!-- 引用dubbo服务 -->
+    <dubbo:application name="e3-order-web"/>
+    <dubbo:registry protocol="zookeeper" address="192.168.25.131:2181"/>
+    <dubbo:reference interface="cn.yang.e3mall.cart.service.CartService" id="cartService" timeout="600000"/>
+    <dubbo:reference interface="cn.yang.e3mall.sso.service.TokenService" id="tokenService" timeout="600000"/>
+    <dubbo:reference interface="cn.yang.e3mall.order.service.OrderService" id="orderService" timeout="600000"/>
+
+</beans>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>e3_parent</artifactId>
+        <groupId>cn.yang.e3mall</groupId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../e3_parent/pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>e3-sso</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>e3-sso-interface</module>
+        <module>e3-sso-Service</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.yang.e3mall</groupId>
+            <artifactId>e3_common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <!-- 配置tomcat插件 -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <configuration>
+                    <port>8087</port>
+                    <path>/</path>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

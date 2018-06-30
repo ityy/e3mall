@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+        http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+
+
+    <!-- 加载配置文件 -->
+    <context:property-placeholder location="classpath:resource.properties"/>
+
+    <context:component-scan base-package="cn.yang.e3mall.controller"/>
+
+    <!--配置三大件 处理器映射器 处理器适配器 视图解释器-->
+    <!-- 处理器映射器 -->
+    <!--         <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/> -->
+    <!-- 处理器适配器 -->
+    <!--         <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"/> -->
+    <!-- 注解驱动 相当于上边两项的配置-->
+    <mvc:annotation-driven/>
+    <!-- 视图解释器 指定路径和扩展名 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    <!-- 定义文件上传解析器 -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 设定默认编码 -->
+        <property name="defaultEncoding" value="UTF-8"></property>
+        <!-- 设定文件上传的最大值5MB，5*1024*1024 -->
+        <property name="maxUploadSize" value="5242880"></property>
+    </bean>
+
+    <!--配置资源映射-->
+    <mvc:resources mapping="/css/**" location="/css/"/>
+    <mvc:resources mapping="/js/**" location="/js/"/>
+
+    <!--
+        引用dubbo服务
+        配置zookeeper时，可以配置多个：address="192.168.2.173:2181,192.168.25.100:2182,192.168.25.100:2183"
+    -->
+    <dubbo:application name="e3-manager-web"/>
+    <dubbo:registry protocol="zookeeper" address="192.168.25.131:2181"/>
+    <dubbo:reference interface="cn.yang.e3mall.service.ItemService" id="itemService"/>
+    <dubbo:reference interface="cn.yang.e3mall.service.ItemCatService" id="itemCatService"/>
+    <dubbo:reference interface="cn.yang.e3mall.content.service.ContentCategoryService" id="contentCategoryService"/>
+    <dubbo:reference interface="cn.yang.e3mall.content.service.ContentService" id="contentService"/>
+    <dubbo:reference interface="cn.yang.e3mall.search.service.SearchItemService" id="searchItemService"/>
+
+
+
+
+</beans>

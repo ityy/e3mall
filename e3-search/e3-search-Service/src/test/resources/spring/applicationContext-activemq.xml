@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd">
+
+    <!--需要发送消息的一方的配置-->
+
+    <!-- 1，配置基础连接 -->
+    <!-- ActiveMQ 的ConnectionFactory -->
+    <bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://192.168.25.131:61616" />
+    </bean>
+    <!-- Spring提供的用于管理MQ的ConnectionFactory的ConnectionFactory，可以提供ActiveMQ等各种符合jms规范的MQ-->
+    <bean id="connectionFactory"
+          class="org.springframework.jms.connection.SingleConnectionFactory">
+        <!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->
+        <property name="targetConnectionFactory" ref="targetConnectionFactory" />
+    </bean>
+
+
+    <!-- 接收消息 -->
+    <!-- 配置监听器 -->
+    <bean id="myMessageListener" class="cn.yang.e3mall.search.message.MyMessageListener" />
+    <!-- 消息监听容器 -->
+    <bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destination" ref="queueDestination" />
+        <property name="messageListener" ref="myMessageListener" />
+    </bean>
+
+    <!--这个是队列目的地，点对点的  参数是队列名称-->
+    <bean id="queueDestination" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg>
+            <value>test-queue</value>
+        </constructor-arg>
+    </bean>
+    <!--这个是主题目的地，一对多的 -->
+    <bean id="topicDestination" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="topic" />
+    </bean>
+
+</beans>
